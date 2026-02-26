@@ -1,26 +1,27 @@
-$(document).ready(function () {
+$('#searchBtn').click(function() {
+    var busca = $('#username').val();
 
-    $("#searchBtn").click(function () {
-        const username = $("#username").val().trim();
-        $.ajax({
-            url: `https://api.github.com/users/${username}/repos`,
-            method: "GET",
-            function (repos) {
-                $("#loading").addClass("d-none");
-                repos.forEach(repo => {
-                    const row = `
-                        <tr>
-                            <td><a href="${repo.html_url}" target="_blank">${repo.name}</a></td>
-                            <td>${repo.description || "No description"}</td>
-                            <td>${repo.stargazers_count}</td>
-                        </tr>
-                    `;
-                    $("#repoTbl tbody").append(row);
-                });
+    if (busca == "") return;
 
-                $("#repoTbl").removeClass("d-none");
-            },
+    $('#rows').empty();
+    $('#repoTbl').addClass('d-none');
 
-        });
-    });
-});
+
+    $.get("https://api.github.com/users/" + busca + "/repos", function(lista) {
+        $('#repoTbl').removeClass('d-none');
+
+        lista.forEach(function (item) {
+            var name = item.name;
+            var txt = item.description || "Empty";
+            var pts = item.stargazers_count;
+
+            var html = "<tr>";
+            html += "  <td>" + name + "</td>";
+            html += "  <td>" + txt + "</td>";
+            html += "  <td>" + pts + "</td>";
+            html += "</tr>";
+
+            $('#rows').append(html);
+        })
+    })
+})
